@@ -1,7 +1,9 @@
 package com.example.calic.catcherror;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +37,21 @@ public class PlayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Restart?")
+                .setCancelable(false)
+                .setPositiveButton("Yes",new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        dialog.cancel();
+                    }
+                })
+                .setNegativeButton("No",new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        PlayActivity.this.finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
         //Toast.makeText(this, "Back button pressed.", Toast.LENGTH_SHORT).show();
         //super.onBackPressed();
     }//뒤로가기 나가기
