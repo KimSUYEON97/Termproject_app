@@ -33,6 +33,11 @@ public class PlayActivity extends AppCompatActivity {
         gameView.resume();
     }
 
+    @Override
+    public void onBackPressed() {
+        //Toast.makeText(this, "Back button pressed.", Toast.LENGTH_SHORT).show();
+        //super.onBackPressed();
+    }//뒤로가기 나가기
     protected class MyView extends View {//화면 터치했을때 터치한 위치 좌표
 
         public MyView(Context context) {
