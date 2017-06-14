@@ -16,7 +16,18 @@ public class PlayActivity extends AppCompatActivity {
         setContentView(gameView);//GameView로 화면 전환?
         //View view = new MyView(this);
         //setContentView(view);
+        /*new CountDownTimer(100*1000,1000){
+            @Override
+            public void onTick(long millisUntilFinished){
+                value++;
+            }
 
+            @Override
+            public void onFinish(){
+                Intent intent = new Intent(getApplicationContext(),EndActivity.class);
+                startActivity(intent);
+            }
+        }.start();*/
         //setContentView(R.layout.activity_play);
     }
 
@@ -76,4 +87,5 @@ public class PlayActivity extends AppCompatActivity {
 
 
     }*/
+
 }

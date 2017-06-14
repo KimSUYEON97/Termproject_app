@@ -1,6 +1,8 @@
 package com.example.calic.catcherror;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.CountDownTimer;
@@ -9,7 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by calic on 2017-06-05.
@@ -17,12 +20,14 @@ import java.util.List;
 
 public class GameView extends View {
 
-    volatile boolean playing;
+    //volatile boolean playing;
     //private Thread gameThread = null;
     private int width,height;
-    private List<Error> errorList;
-    private Character humanA;
+    ArrayList<Error> errorList = new ArrayList<Error>();
+    Character humanA = new Character(0,0);
     private int time=0,movement=0;
+    private Bitmap Err;
+    private Bitmap Char;
     public GameView(Context context){
         super(context);
         //화면 사이즈 구하기
@@ -30,17 +35,24 @@ public class GameView extends View {
         Display display = manager.getDefaultDisplay();
         Point sizePoint = new Point();
         display.getSize(sizePoint);
+
         width=sizePoint.x;
         height = sizePoint.y;
-        humanA.place(width,height);//캐릭터 위치 중심으로 고정
+        humanA.replace(width,height);
+        Char = BitmapFactory.decodeResource(getResources(), R.drawable.holes);
+        Err = BitmapFactory.decodeResource(getResources(), R.drawable.bugimage);
+
         new CountDownTimer(100*1000,1000){//1분간 플레이
             @Override
             public void onTick(long millisUntilFinished)
             {
+                Random random =new Random();
+                int num = random.nextInt(20)+10;
                 time++;
                 if(time%5==0) {//5초마다 새로운 에러 발생
-
-                    errorList.add(new Error(movement));
+                    for(int i=0;i<num;i++) {
+                        errorList.add(new Error(movement, width, height));
+                    }
                     movement++;//방향설정을 위한 값
                 }
             }
@@ -53,7 +65,12 @@ public class GameView extends View {
     }
 
     protected void onDraw(Canvas canvas){//움직임 설정//1초에 60번 실행된다.
-
+        canvas.drawBitmap(Char,humanA.getX() ,humanA.getY(), null);
+        for (int i=0;i<errorList.size();i++) {
+            canvas.drawBitmap(Err, errorList.get(i).getX(), errorList.get(i).getX(), null);
+        }
+        super.onDraw(canvas);
+        update();
     }
 
     private void update(){//움직임 변화
