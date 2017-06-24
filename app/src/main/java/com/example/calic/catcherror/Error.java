@@ -7,38 +7,41 @@ import java.util.Random;
  */
 
 public class Error {
-    private float x,y;
+    private int x,y;
     private int movement;
+    /*public Error(){
+        movement=0;
+        x=0;
+        y=0;
+    }*/
 
     public Error(int movement,int width, int height){
         Random random=new Random();
         this.movement=movement;
 
-        if(movement%8==0&&movement%8==1){
+        if(movement%4==0){
             x=0;
-            y=random.nextInt(2000)+1;
-            while(y>height){
-                y=random.nextInt(2000)+1;
-            }
+            do {
+                y = random.nextInt(2000);
+            }while(y>height);
         }
-        if(movement%8==2&&movement%8==3){
+        if(movement%4==1){
             y=0;
-            x=random.nextInt(2000)+1;
-            while(x>width){
-                x=random.nextInt(2000)+1;
-            }
+            do {
+                x = random.nextInt(2000);
+            }while(x>width);
         }
-        if(movement%8==4&&movement%8==5){
+        if(movement%4==2){
             x=width;
-            while(y>height){
-                y=random.nextInt(2000)+1;
-            }
+            do {
+                y = random.nextInt(2000);
+            }while(y>height);
         }
-        if(movement%8==6&&movement%8==7){
+        if(movement%4==3){
             y=height;
-            while(x>width){
-                x=random.nextInt(2000)+1;
-            }
+            do {
+                x = random.nextInt(2000);
+            }while(x>width);
         }
     }
     //기본 움직임에서 무언가 물체에 부딪히면 가던 방향의 90도 꺽어서 이동하기??
@@ -58,10 +61,10 @@ public class Error {
         x--;
         y++;
     }
-    public float getX(){
+    public int getX(){
         return x;
     }
-    public float getY(){
+    public int getY(){
         return y;
     }
 
