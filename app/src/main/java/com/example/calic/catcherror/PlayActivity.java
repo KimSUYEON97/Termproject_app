@@ -18,6 +18,10 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Random;
 
+//체력바 띄우자....ㅠㅠ 1순위
+//게임 도중에 나왔을때 시간 처리//안되면 뒤로가기 없애자.....ㅠㅠㅠ2순위
+//캐릭터 위치 변화 시켜보기3순위
+
 public class PlayActivity extends AppCompatActivity {
 
     //private GameView gameView;
@@ -25,16 +29,20 @@ public class PlayActivity extends AppCompatActivity {
     ArrayList<Error> errorList = new ArrayList<Error>();
     ArrayList<GraphicObject> drawList = new ArrayList<GraphicObject>();
     Character humanA = new Character(800,450);
-    private int time=0,movement=0,count =0,catchs=0,all=0;
-    private Bitmap Err;
+    private int time=0,movement=0,count =0,catchs=0,all=0,max_ne=10;//시간, 움직임 변화, list길이, 에러잡은개수,에러발생개수
+    private Bitmap Err1,Err2,Err3,nErr;
     private Bitmap Char;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Char = BitmapFactory.decodeResource(getResources(), R.drawable.bugimage1);
-        Err = BitmapFactory.decodeResource(getResources(), R.drawable.bugimage);
+        Char = BitmapFactory.decodeResource(getResources(), R.drawable.noname);
+        nErr = BitmapFactory.decodeResource(getResources(), R.drawable.notbug);
+        Err1 = BitmapFactory.decodeResource(getResources(), R.drawable.bug1);
+        Err2 = BitmapFactory.decodeResource(getResources(), R.drawable.bug2);
+        Err3 = BitmapFactory.decodeResource(getResources(), R.drawable.bug3);
+
         View view = new MyView(this);
         setContentView(view);
         new CountDownTimer(60*1000,1000){//1분간 플레이
@@ -42,39 +50,60 @@ public class PlayActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished)
             {
                 Random random =new Random();
-                int num = random.nextInt(20)+10;
+                int e_num = random.nextInt(20)+10;
+                int ne_num;
+                if(max_ne<=0){
+                    ne_num=0;
+                }else{
+                    ne_num=random.nextInt(3)+2;
+                }
                 if(time%10==1) {//10초마다 새로운 에러 발생
-                    for(int i=0;i<num;i++) {
-                        errorList.add(new Error(movement, width,height));//에러 추가
-                        drawList.add(new GraphicObject(Err));
-                        drawList.get(i+count).SetPosition(errorList.get(i+count).getX(),errorList.get(i).getY());
+                    int i;
+                    for(i=0;i<e_num-ne_num;i++) {
+                        errorList.add(new Error(0,movement, width,height));//에러 추가
+                        if(movement%3==1) {
+                            drawList.add(new GraphicObject(Err1));
+                        }if(movement%3==2) {
+                            drawList.add(new GraphicObject(Err2));
+                        }if(movement%3==0) {
+                            drawList.add(new GraphicObject(Err3));
+                        }
+                        drawList.get(i+count).SetPosition(errorList.get(i+count).getX(),errorList.get(i+count).getY());
                         Log.v("태그","에러가 생성되었습니다");
                         movement++;//방향설정을 위한 값
+                    }for(;i<e_num;i++) {
+                        errorList.add(new Error(1, movement, width, height));//에러 추가
+                        drawList.add(new GraphicObject(nErr));
+                        drawList.get(i+count).SetPosition(errorList.get(i+count).getX(),errorList.get(i+count).getY());
+                        movement++;
                     }
-                    count=count+num;
-                    all+=num;
+                    max_ne-=ne_num;
+                    count=count+e_num;
+                    all=all+(e_num-ne_num);
                 }
                 for(int i=0;i<count;i++) {
-                    if (errorList.get(i).getX() <= humanA.getX() + 300 && humanA.getX() <= errorList.get(i).getX()
-                            && errorList.get(i).getY() <= humanA.getY() + 300 && humanA.getY() <= errorList.get(i).getY()) {
-                        if(humanA.life(true)==0){
-                            onFinish();
-                            time+=100;
-                            break;
+                    if(errorList.get(i).getDiffer()==0) {
+                        if (errorList.get(i).getX() <= humanA.getX() + 300 && humanA.getX() <= errorList.get(i).getX()
+                                && errorList.get(i).getY() <= humanA.getY() + 300 && humanA.getY() <= errorList.get(i).getY()) {
+                            if (humanA.life(true) == 0) {
+                                onFinish();
+                                time += 100;
+                                break;
+                            }
                         }
                     }
                 }
                 time++;
-                Log.v("태그","update가 실행되었습니다.");
             }
 
             @Override
             public void onFinish(){//끝내기
-                String score=String.valueOf(((double)catchs/all)*100);
-                String lastlife=String.valueOf(humanA.getLifegage()*2);
-                Intent intent = new Intent(getApplicationContext(),EndActivity.class);
-                intent.putExtra("score",score);
-                intent.putExtra("lastlife",lastlife);
+
+                String score = String.valueOf((int) (((double) catchs / all) * 100));
+                String lastlife = String.valueOf((int) (humanA.getLifegage() * 2));
+                Intent intent = new Intent(getApplicationContext(), EndActivity.class);
+                intent.putExtra("score", score);
+                intent.putExtra("lastlife", lastlife);
                 startActivity(intent);
                 finish();
             }
@@ -94,56 +123,11 @@ public class PlayActivity extends AppCompatActivity {
         //gameView.resume();
     }
 
-    private void update(){//움직임 변화
-        for(int i=0;i<count;i++){
-            if(errorList.get(i).getMovement()%4==0){
-                if (errorList.get(i).getX() == width || errorList.get(i).getY() == 0) {
-                    errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                }
-                else {
-                    errorList.get(i).move1();
-                    errorList.get(i).move6();
-                    drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
-                }
-            }
-            if(errorList.get(i).getMovement()%4==1){
-                if(errorList.get(i).getX()==width||errorList.get(i).getY()==height) {
-                    errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                }
-                else {
-                    errorList.get(i).move2();
-                    errorList.get(i).move5();
-                    drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
-                }
-            }
-            if(errorList.get(i).getMovement()%4==2){
-                if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == height) {
-                    errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                }
-                else {
-                    errorList.get(i).move3();
-                    errorList.get(i).move5();
-                    drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
-                }
-            }
-            if(errorList.get(i).getMovement()%4==3){
-                if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == 0) {
-                    errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                }
-                else {
-                    errorList.get(i).move4();
-                    errorList.get(i).move6();
-                    drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
-                }
-            }
-        }
-    }
-
     @Override
     public void onBackPressed() {
         onPause();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Wanna Restart?")
+        builder.setMessage("Restart?")
                 .setCancelable(false)
                 .setPositiveButton("Yes",new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int id){
@@ -177,6 +161,52 @@ public class PlayActivity extends AppCompatActivity {
             }
             invalidate();
             update();//움직임 업데이트
+            Log.v("태그","update가 실행되었습니다.");
+        }
+
+        private void update(){//움직임 변화
+            for(int i=0;i<count;i++){
+                if(errorList.get(i).getMovement()%4==0){
+                    if (errorList.get(i).getX() == width || errorList.get(i).getY() == 0) {
+                        errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
+                    }
+                    else {
+                        errorList.get(i).move1();
+                        errorList.get(i).move6();
+                        drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
+                    }
+                }
+                if(errorList.get(i).getMovement()%4==1){
+                    if(errorList.get(i).getX()==width||errorList.get(i).getY()==height) {
+                        errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
+                    }
+                    else {
+                        errorList.get(i).move2();
+                        errorList.get(i).move5();
+                        drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
+                    }
+                }
+                if(errorList.get(i).getMovement()%4==2){
+                    if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == height) {
+                        errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
+                    }
+                    else {
+                        errorList.get(i).move3();
+                        errorList.get(i).move5();
+                        drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
+                    }
+                }
+                if(errorList.get(i).getMovement()%4==3){
+                    if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == 0) {
+                        errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
+                    }
+                    else {
+                        errorList.get(i).move4();
+                        errorList.get(i).move6();
+                        drawList.get(i).SetPosition(errorList.get(i).getX(),errorList.get(i).getY());
+                    }
+                }
+            }
         }
 
         @Override
@@ -189,7 +219,26 @@ public class PlayActivity extends AppCompatActivity {
                 for (int i=0;i<count;i++) {
                     if (errorList.get(i).getX() <= x &&x<=errorList.get(i).getX()+200
                             && errorList.get(i).getY()<=y &&y<=errorList.get(i).getY()+200) {
-                        errorList.remove(i);//사라짐//그치만 안사라지넹
+                        if(errorList.get(i).getDiffer()==1) {
+                            for(int j=0;j<3;j++) {
+                                errorList.add(new Error(0, movement, width, height));//에러 추가
+                                errorList.get(j + count).resetXY(errorList.get(i).getX(), errorList.get(i).getY());
+                                if (movement % 3 == 1) {
+                                    drawList.add(new GraphicObject(Err1));
+                                }
+                                if (movement % 3 == 2) {
+                                    drawList.add(new GraphicObject(Err2));
+                                }
+                                if (movement % 3 == 0) {
+                                    drawList.add(new GraphicObject(Err3));
+                                }
+                                drawList.get(j + count).SetPosition(errorList.get(j + count).getX(), errorList.get(j+count).getY());
+                                Log.v("태그", "에러가 생성되었습니다");
+                                movement++;//방향설정을 위한 값
+                            }
+                            count+=3;
+                        }
+                        errorList.remove(i);//사라짐
                         drawList.remove(i);
                         humanA.life(false);
                         count--;

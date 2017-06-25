@@ -10,35 +10,41 @@ public class Error {
     private int x,y;
     private int movement;
     private int loop;
-
-    public Error(int movement,int width, int height){
+    private int differ;
+    public Error(int differ,int movement,int width, int height){
         Random random=new Random();
         Random plus = new Random();
         this.movement=movement;
+        this.differ=differ;
         loop=plus.nextInt(4);
-        if(movement%4==0){
-            x=0;
-            do {
-                y = random.nextInt(2000)+plus.nextInt(40);
-            }while(y<height/2||y>height);
-        }
-        if(movement%4==1){
-            y=0;
-            do {
-                x = random.nextInt(2000)+plus.nextInt(100);
-            }while(x>width/2);
-        }
-        if(movement%4==2){//여러곳에서 버그 이미지가 안뜸 수정 필요
-            x=width;
-            do {
-                y = random.nextInt(2000)+plus.nextInt(100);
-            }while(y>height/2);
-        }
-        if(movement%4==3){
-            y=height;
-            do {
-                x = random.nextInt(2000)+plus.nextInt(40);
-            }while(x<width/2||x>width);
+        if(differ==1){
+            x=random.nextInt(1000)+plus.nextInt(40);
+            y=random.nextInt(1000)+plus.nextInt(40);
+        }else {
+            if (movement % 4 == 0) {
+                x = 0;
+                do {
+                    y = random.nextInt(2000) + plus.nextInt(40);
+                } while (y < height / 2 || y > height);
+            }
+            if (movement % 4 == 1) {
+                y = 0;
+                do {
+                    x = random.nextInt(2000) + plus.nextInt(100);
+                } while (x > width / 2);
+            }
+            if (movement % 4 == 2) {//여러곳에서 버그 이미지가 안뜸 수정 필요
+                x = width;
+                do {
+                    y = random.nextInt(2000) + plus.nextInt(100);
+                } while (y > height / 2);
+            }
+            if (movement % 4 == 3) {
+                y = height;
+                do {
+                    x = random.nextInt(2000) + plus.nextInt(40);
+                } while (x < width / 2 || x > width);
+            }
         }
     }
     //기본 움직임에서 무언가 물체에 부딪히면 가던 방향의 90도 꺽어서 이동하기??
@@ -91,6 +97,8 @@ public class Error {
         }
 
     }
+    public void resetXY(int x,int y){this.x=x;this.y=y;}
+    public int getDiffer(){return differ;}
     public void setMovement(int movement){
         this.movement=movement;
     }
