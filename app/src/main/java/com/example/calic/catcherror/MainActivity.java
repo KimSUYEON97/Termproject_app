@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClicked(View v){
         Intent intent = new Intent(getApplicationContext(),PlayActivity.class);
         startActivity(intent);
+        //finish();
     }//게임화면으로 들어감
 
 }

@@ -5,15 +5,19 @@ package com.example.calic.catcherror;
  */
 
 public class Character {
-    private int lifegage=100;
+    private int lifegage=50;
     private float x,y;
 
     public int life(boolean Edead){
         if(lifegage==0){
             return 0;
         }
-        if(Edead){
+        if(Edead==true){
             lifegage--;
+        }else if (Edead==false){
+            if(lifegage<50) {
+                lifegage++;
+            }
         }
         return lifegage;
     }
@@ -22,10 +26,8 @@ public class Character {
         x=width;
         y=height;
     }
-    public void replace(int width, int height){
-        x=width/2;
-        y=height/2;
-    }
+
+    public int getLifegage(){return lifegage;}
     public float getX(){
         return x;
     }

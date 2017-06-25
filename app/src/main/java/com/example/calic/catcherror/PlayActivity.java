@@ -2,6 +2,7 @@ package com.example.calic.catcherror;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,7 +25,7 @@ public class PlayActivity extends AppCompatActivity {
     ArrayList<Error> errorList = new ArrayList<Error>();
     ArrayList<GraphicObject> drawList = new ArrayList<GraphicObject>();
     Character humanA = new Character(800,450);
-    private int time=0,movement=0,count =0,change=0;
+    private int time=0,movement=0,count =0,catchs=0,all=0;
     private Bitmap Err;
     private Bitmap Char;
 
@@ -51,6 +52,17 @@ public class PlayActivity extends AppCompatActivity {
                         movement++;//방향설정을 위한 값
                     }
                     count=count+num;
+                    all+=num;
+                }
+                for(int i=0;i<count;i++) {
+                    if (errorList.get(i).getX() <= humanA.getX() + 300 && humanA.getX() <= errorList.get(i).getX()
+                            && errorList.get(i).getY() <= humanA.getY() + 300 && humanA.getY() <= errorList.get(i).getY()) {
+                        if(humanA.life(true)==0){
+                            onFinish();
+                            time+=100;
+                            break;
+                        }
+                    }
                 }
                 time++;
                 Log.v("태그","update가 실행되었습니다.");
@@ -58,7 +70,13 @@ public class PlayActivity extends AppCompatActivity {
 
             @Override
             public void onFinish(){//끝내기
-
+                String score=String.valueOf(((double)catchs/all)*100);
+                String lastlife=String.valueOf(humanA.getLifegage()*2);
+                Intent intent = new Intent(getApplicationContext(),EndActivity.class);
+                intent.putExtra("score",score);
+                intent.putExtra("lastlife",lastlife);
+                startActivity(intent);
+                finish();
             }
         }.start();
 
@@ -81,7 +99,6 @@ public class PlayActivity extends AppCompatActivity {
             if(errorList.get(i).getMovement()%4==0){
                 if (errorList.get(i).getX() == width || errorList.get(i).getY() == 0) {
                     errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                    //errorList.get(i).move6();
                 }
                 else {
                     errorList.get(i).move1();
@@ -92,7 +109,6 @@ public class PlayActivity extends AppCompatActivity {
             if(errorList.get(i).getMovement()%4==1){
                 if(errorList.get(i).getX()==width||errorList.get(i).getY()==height) {
                     errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                    //errorList.get(i).move5();
                 }
                 else {
                     errorList.get(i).move2();
@@ -103,7 +119,6 @@ public class PlayActivity extends AppCompatActivity {
             if(errorList.get(i).getMovement()%4==2){
                 if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == height) {
                     errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                    //errorList.get(i).move5();
                 }
                 else {
                     errorList.get(i).move3();
@@ -114,7 +129,6 @@ public class PlayActivity extends AppCompatActivity {
             if(errorList.get(i).getMovement()%4==3){
                 if (errorList.get(i).getX() == 0 || errorList.get(i).getY() == 0) {
                     errorList.get(i).setMovement(errorList.get(i).getMovement() + 1);
-                    //errorList.get(i).move6();
                 }
                 else {
                     errorList.get(i).move4();
@@ -163,7 +177,6 @@ public class PlayActivity extends AppCompatActivity {
             }
             invalidate();
             update();//움직임 업데이트
-
         }
 
         @Override
@@ -174,10 +187,13 @@ public class PlayActivity extends AppCompatActivity {
                 float y= event.getY();
                 Log.v("태그","touch가 실행되었습니다.");
                 for (int i=0;i<count;i++) {
-                    if (errorList.get(i).getX() <= x &&x<=errorList.get(i).getX()+100&& errorList.get(i).getY()<=y&&y<=errorList.get(i).getY()+100) {
+                    if (errorList.get(i).getX() <= x &&x<=errorList.get(i).getX()+200
+                            && errorList.get(i).getY()<=y &&y<=errorList.get(i).getY()+200) {
                         errorList.remove(i);//사라짐//그치만 안사라지넹
                         drawList.remove(i);
+                        humanA.life(false);
                         count--;
+                        catchs++;
                         invalidate();
                         Log.v("태그","삭제가 실행되었습니다.");
                         return true;

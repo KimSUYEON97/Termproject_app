@@ -22,8 +22,8 @@
         </activity>
         <activity
             android:name=".PlayActivity"
-            android:screenOrientation="landscape" >
-        </activity>
+            android:screenOrientation="landscape"></activity>
+        <activity android:name=".EndActivity"></activity>
     </application>
 
 </manifest>
