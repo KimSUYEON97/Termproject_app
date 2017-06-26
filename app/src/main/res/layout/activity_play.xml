@@ -6,4 +6,13 @@
     android:layout_height="match_parent"
     tools:context="com.example.calic.catcherror.PlayActivity">
 
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="42dp"
+        tools:layout_editor_absoluteY="49dp" />
 </android.support.constraint.ConstraintLayout>

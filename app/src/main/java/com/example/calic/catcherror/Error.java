@@ -72,11 +72,11 @@ public class Error {
             y-=2;
             loop+=2;
         }else if(loop%4==3){
-            x-=2;
+            x-=4;
             loop-=2;
         }
         else{
-            y+=2;
+            y+=4;
             loop--;
         }
     }
@@ -88,11 +88,11 @@ public class Error {
             x-=2;
             loop+=2;
         }else if(loop%4==3){
-            y-=2;
+            y-=4;
             loop-=2;
         }
         else{
-            x+=2;
+            x+=4;
             loop--;
         }
 

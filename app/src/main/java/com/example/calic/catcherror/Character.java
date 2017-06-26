@@ -9,11 +9,12 @@ public class Character {
     private float x,y;
 
     public float life(boolean Edead){
-        if(lifegage==0){
+        if(lifegage<=0){
+            lifegage=0;
             return 0;
         }
         if(Edead==true){
-            lifegage-=0.5;
+            lifegage-=1;
         }else if (Edead==false){
             if(lifegage<50) {
                 lifegage+=0.5;

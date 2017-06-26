@@ -18,9 +18,6 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Random;
 
-//체력바 띄우자....ㅠㅠ 1순위
-//게임 도중에 나왔을때 시간 처리//안되면 뒤로가기 없애자.....ㅠㅠㅠ2순위
-//캐릭터 위치 변화 시켜보기3순위
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -29,14 +26,14 @@ public class PlayActivity extends AppCompatActivity {
     ArrayList<Error> errorList = new ArrayList<Error>();
     ArrayList<GraphicObject> drawList = new ArrayList<GraphicObject>();
     Character humanA = new Character(800,450);
-    private int time=0,movement=0,count =0,catchs=0,all=0,max_ne=10;//시간, 움직임 변화, list길이, 에러잡은개수,에러발생개수
+    private int time=0,movement=0,count =0,catchs=0,all=0,max_ne=10,check=0;//시간, 움직임 변화, list길이, 에러잡은개수,에러발생개수
     private Bitmap Err1,Err2,Err3,nErr;
     private Bitmap Char;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //life=String.valueOf((int)humanA.getLifegage());
         Char = BitmapFactory.decodeResource(getResources(), R.drawable.noname);
         nErr = BitmapFactory.decodeResource(getResources(), R.drawable.notbug);
         Err1 = BitmapFactory.decodeResource(getResources(), R.drawable.bug1);
@@ -45,6 +42,7 @@ public class PlayActivity extends AppCompatActivity {
 
         View view = new MyView(this);
         setContentView(view);
+
         new CountDownTimer(60*1000,1000){//1분간 플레이
             @Override
             public void onTick(long millisUntilFinished)
@@ -87,7 +85,7 @@ public class PlayActivity extends AppCompatActivity {
                                 && errorList.get(i).getY() <= humanA.getY() + 300 && humanA.getY() <= errorList.get(i).getY()) {
                             if (humanA.life(true) == 0) {
                                 onFinish();
-                                time += 100;
+                                cancel();
                                 break;
                             }
                         }
@@ -114,13 +112,11 @@ public class PlayActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        //gameView.pause();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        //gameView.resume();
     }
 
     @Override
@@ -149,12 +145,13 @@ public class PlayActivity extends AppCompatActivity {
 
         public MyView(Context context) {
             super(context);
+
             DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
             width=dm.widthPixels;
             height=dm.heightPixels;
         }
 
-        protected void onDraw(Canvas canvas){//움직임 설정//1초에 60번 실행된다.?
+        protected void onDraw(Canvas canvas){//움직임 그리기
             canvas.drawBitmap(Char,humanA.getX(),humanA.getY(),null);
             for(int i=0;i<count;i++){
                 drawList.get(i).Draw(canvas);
@@ -213,7 +210,7 @@ public class PlayActivity extends AppCompatActivity {
         public boolean onTouchEvent(MotionEvent event){
             super.onTouchEvent(event);
             if(event.getAction()==MotionEvent.ACTION_DOWN){
-                float x= event.getX();//화면 터치했을때 터치한 위치 좌표?
+                float x= event.getX();//화면 터치했을때 터치한 위치 좌표
                 float y= event.getY();
                 Log.v("태그","touch가 실행되었습니다.");
                 for (int i=0;i<count;i++) {
@@ -235,12 +232,16 @@ public class PlayActivity extends AppCompatActivity {
                                 drawList.get(j + count).SetPosition(errorList.get(j + count).getX(), errorList.get(j+count).getY());
                                 Log.v("태그", "에러가 생성되었습니다");
                                 movement++;//방향설정을 위한 값
+                                humanA.life(true);
                             }
                             count+=3;
                         }
+                        if(errorList.get(i).getDiffer()==0) {
+                            humanA.life(false);
+                        }
                         errorList.remove(i);//사라짐
                         drawList.remove(i);
-                        humanA.life(false);
+
                         count--;
                         catchs++;
                         invalidate();
