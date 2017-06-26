@@ -21,19 +21,18 @@ import java.util.Random;
 
 public class PlayActivity extends AppCompatActivity {
 
-    //private GameView gameView;
     private int width,height;
     ArrayList<Error> errorList = new ArrayList<Error>();
     ArrayList<GraphicObject> drawList = new ArrayList<GraphicObject>();
     Character humanA = new Character(800,450);
-    private int time=0,movement=0,count =0,catchs=0,all=0,max_ne=10,check=0;//시간, 움직임 변화, list길이, 에러잡은개수,에러발생개수
+    CountDownTimer Countdown = null;
+    private int time=0,movement=0,count =0,catchs=0,all=0,max_ne=10;//시간, 움직임 변화, list길이, 에러잡은개수,에러발생개수
     private Bitmap Err1,Err2,Err3,nErr;
     private Bitmap Char;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //life=String.valueOf((int)humanA.getLifegage());
         Char = BitmapFactory.decodeResource(getResources(), R.drawable.noname);
         nErr = BitmapFactory.decodeResource(getResources(), R.drawable.notbug);
         Err1 = BitmapFactory.decodeResource(getResources(), R.drawable.bug1);
@@ -43,7 +42,7 @@ public class PlayActivity extends AppCompatActivity {
         View view = new MyView(this);
         setContentView(view);
 
-        new CountDownTimer(60*1000,1000){//1분간 플레이
+        Countdown = new CountDownTimer(60*1000,1000){//1분간 플레이
             @Override
             public void onTick(long millisUntilFinished)
             {
@@ -133,7 +132,10 @@ public class PlayActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No",new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int id){
-                        PlayActivity.this.finish();//play화면 종료 main화면으로 Gameview는 어떻게 종료?
+                        Countdown.cancel();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();//play화면 종료
                     }
                 });
         AlertDialog alert = builder.create();
